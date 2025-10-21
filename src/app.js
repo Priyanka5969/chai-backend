@@ -15,4 +15,10 @@ app.use(express.static("public"));
 app.use(express.urlencoded({extended:true, limit:"16kb"}));
 app.use(cookieParser());
 
+
+import userRouter from "./routes/user.routes.js";
+
+//tell versioning of api i.e v1
+app.use("/api/v1/user", userRouter); //middleware passsing control to that controller
+
 export {app};
