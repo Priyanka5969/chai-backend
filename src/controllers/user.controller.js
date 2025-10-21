@@ -5,6 +5,7 @@ import { uploadOnCloudinary } from '../utils/cloudinary.js';
 import {ApiResponse} from '../utils/ApiResponse.js';
 
 const registerUser = asyncHandler(async(req,res) => {
+    console.log(req.body,"req.body");
     // res.status(200).json({
     //     message: "ok"
     // })
@@ -42,18 +43,21 @@ const registerUser = asyncHandler(async(req,res) => {
         throw new ApiError(409, "User with email or username already exists")
     };
 
+    console.log(req?.files,"req.files");
+
     const avatarLocalPath = req.files?.avatar[0]?.path;
     const coverImageLocalPath = req.files?.coverImage[0]?.path;
 
+    console.log(avatarLocalPath,"avatarLocalPath");
     if(!avatarLocalPath){
-        throw new ApiError(400, "Avatar file is required");
+        throw new ApiError(400, "Avatar file is required to save locally");
     }
 
     const avatar = await uploadOnCloudinary(avatarLocalPath);
     const coverImage = await uploadOnCloudinary(coverImageLocalPath);
 
     if(!avatar){
-        throw new ApiError(400, "Avatar file is required");
+        throw new ApiError(400, "Avatar file is required cloudinary");
     }
 
     const user = await User.create({
@@ -62,7 +66,7 @@ const registerUser = asyncHandler(async(req,res) => {
         coverImage: coverImage?.url || "",
         email,
         password,
-        username: userName.toLowerCase()
+        userName: userName.toLowerCase()
     });
 
     const createdUser = await User.findById(user._id).select(
